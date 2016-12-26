@@ -1,0 +1,23 @@
+{
+  "name": "statbot",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clive-io/statbot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clive-io/statbot/issues"
+  },
+  "homepage": "https://github.com/clive-io/statbot#readme",
+  "dependencies": {
+    "botkit": "^0.4.5",
+    "dotenv-safe": "^3.0.0"
+  }
+}
