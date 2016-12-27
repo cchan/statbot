@@ -3,7 +3,7 @@ let Botkit = require('botkit');
 let pm2 = require('pm2');
 
 let controller = Botkit.facebookbot({
-  debug: true,
+  debug: false,
   log: true,
   access_token: process.env.FB_PAGE_TOKEN,
   verify_token: process.env.FB_VERIFY_TOKEN,
