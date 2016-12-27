@@ -1,17 +1,21 @@
 require('dotenv-safe').load();
-let express = require('express');
-let app = express();
-let bodyParser = require('body-parser');
-app.use(bodyParser.json());
+let Botkit = require('botkit');
 
-app.all('/fb', function(req, res){
-  if(req.body && req.body.message)
-    console.log(req.body.message.text);
-  else
-    console.error(req.body);
-  res.sendStatus(200);
+let controller = Botkit.facebookbot({
+  debug: true,
+  log: true,
+  access_token: process.env.FB_PAGE_TOKEN,
+  verify_token: process.env.FB_VERIFY_TOKEN,
+  app_secret: process.env.FB_APP_SECRET,
+  validate_requests: true,
 });
 
-let listener = app.listen(process.env.PORT, function(){
-  console.log("listening at :" + listener.address().port);
+let bot = controller.spawn({});
+
+controller.setupWebserver(process.env.PORT, function(err, webserver) {
+  controller.createWebhookEndpoints(webserver, bot, function() {
+    console.log('ONLINE!');
+  });
 });
+
+
