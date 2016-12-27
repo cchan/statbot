@@ -5,7 +5,8 @@ let bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 app.all('/fb', function(req, res){
-  console.log(req.body.message.text);
+  if(req.body && req.body.message)
+    console.log(req.body.message.text);
   res.sendStatus(200);
 });
 
