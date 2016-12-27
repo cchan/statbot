@@ -7,6 +7,8 @@ app.use(bodyParser.json());
 app.all('/fb', function(req, res){
   if(req.body && req.body.message)
     console.log(req.body.message.text);
+  else
+    console.error(req.body);
   res.sendStatus(200);
 });
 
