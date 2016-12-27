@@ -1,5 +1,6 @@
 require('dotenv-safe').load();
 let Botkit = require('botkit');
+let pm2 = require('pm2');
 
 let controller = Botkit.facebookbot({
   debug: true,
@@ -14,9 +15,13 @@ var bot = controller.spawn({
 });
 
 controller.setupWebserver(process.env.PORT, function(err, webserver) {
-    controller.createWebhookEndpoints(webserver, bot, function() {
-        console.log('ONLINE!');
+  controller.createWebhookEndpoints(webserver, bot, function() {
+    pm2.launchBus((err, bus) => {
+      bus.on('log:out', data => {
+        //bot.reply...? bot.say?
+      });
     });
+  });
 });
 
 controller.api.thread_settings.greeting('Hello! I\'m a Botkit bot!');
