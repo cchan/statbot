@@ -66,15 +66,9 @@ controller.setupWebserver(process.env.PORT, function(err, webserver) {
 });
 
 
-
 controller.hears(['^hello', '^hi'], 'message_received,facebook_postback', function(bot, message) {
-  bot.reply(message, JSON.stringify(message.user));
-  controller.storage.users.get(message.user, function(err, user) {
-    if (user && user.name)
-      bot.reply(message, 'Hello ' + user.name + '!!');
-    else
-      bot.reply(message, 'Hello.' + JSON.stringify(user));
-  });
+  bot.reply(message, JSON.stringify(message));
+  bot.reply(message, "hi");
 });
 
 
