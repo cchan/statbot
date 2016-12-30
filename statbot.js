@@ -1,5 +1,9 @@
 let Botkit = require('botkit');
 
+//todo: statbot.use(statbot.logwatch({options}))
+  //module.exports.logwatch = require("./botbits/logwatch");
+//todo: https://github.com/spchuang/fb-local-chat-bot
+
 module.exports = function(options){
   if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id || !options.port)
     throw new Error("Fatal: missing required options for statbot initialization.");
@@ -20,7 +24,7 @@ module.exports = function(options){
   //Set up receive webhook for Facebook
   controller.setupWebserver(options.port, function(err, webserver) {
     controller.createWebhookEndpoints(webserver, bot, function() {
-      console.log('Ready to receive messages');
+      console.log('Ready to receive messages on port ' + options.port);
     });
   });
   
@@ -48,7 +52,6 @@ module.exports = function(options){
   
   return {
     say: say,
-    hears: hears,
-    port: options.port
+    hears: hears
   };
 }

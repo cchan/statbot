@@ -20,8 +20,6 @@
     "botkit": "^0.4.5"
   },
   "devDependencies": {
-    "dotenv-safe": "^3.0.0",
-    "mocha": "^3.2.0",
-    "os-toolbox": "^0.1.4"
+    "mocha": "^3.2.0"
   }
 }
