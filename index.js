@@ -1,74 +1,91 @@
-require('dotenv-safe').load();
 let Botkit = require('botkit');
-let pm2 = require('pm2');
 
 /*
 let statbot = require('statbot')({
-  //Just pass in the botkit controller?
-  //IS THERE A SUCH THING AS BOTKIT MIDDLEWARES? IF SO THEN I NEED THAT.
+  verify_token: FB_VERIFY_TOKEN,
+  page_token: FB_PAGE_TOKEN,
+  app_secret: FB_APP_SECRET,
+  page_scoped_user_id: FB_USER_ID
 });
 
-
-//In statbot.use(statbot.logwatch({options})):
-statbot.says(say => {
-  pm2.launchBus((err, bus) => {
-    bus.on('log:out', data => {
-      say(data);
-    });
-  });
-});
-
-statbot.hears(["status"], reply => {
-  reply(blah);
-});
+statbot.use(statbot.logwatch({options}))
 */
 
-
-let controller = Botkit.facebookbot({
-  debug: false,
-  log: true,
-  access_token: process.env.FB_PAGE_TOKEN,
-  verify_token: process.env.FB_VERIFY_TOKEN,
-  app_secret: process.env.FB_APP_SECRET,
-  validate_requests: true,
-});
-
-var bot = controller.spawn({});
-
-module.exports.says = (callback) => {
-  callback((thing) => {
-    bot.say({
-      text: JSON.stringify(thing),
-      channel: process.env.FB_USER_ID
+module.exports = function(options){
+  if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id)
+    throw new Error("Fatal: missing required options for statbot initialization.");
+  
+  let controller = Botkit.facebookbot({
+    debug: false,
+    log: true,
+    access_token: options.page_token,
+    verify_token: options.verify_token,
+    app_secret: options.app_secret,
+    validate_requests: true,
+    require_delivery: true,
+    receive_via_postback: true
+  });
+  
+  var bot = controller.spawn({});
+  
+  
+  function setupReceive(port){
+    controller.setupWebserver(port, function(err, webserver) {
+      controller.createWebhookEndpoints(webserver, bot, function() {
+        console.log('Ready to receive messages');
+      });
     });
+  }
+  if(options.port)
+    setupReceive(options.port);
+  else
+    require('portfinder').getPort(function(err, port){
+      if(err) throw new Error(err);
+      setupReceive(port);
+    });
+  
+  //Catch-all
+  controller.on('message_received', function(bot, message) {
+      bot.reply(message, 'Unknown command.');
+      return false;
   });
-};
-
-
-module.exports.hears = function(matches, callback){
-  controller.hears(matches, 'message_received,facebook_postback', function(bot, message){
-    if(message.user == process.env.FB_USER_ID){
-      function reply(text){
-        bot.reply(message, text);
+  
+  /* Example:
+      statbot.says(say => {
+        pm2.launchBus((err, bus) => {
+          bus.on('log:out', data => {
+            say(data);
+          });
+        });
+      });
+  */
+  function says(callback){
+    callback((thing) => {
+      bot.say({
+        text: JSON.stringify(thing),
+        channel: options.page_scoped_user_id
+      });
+    });
+  }
+  
+  /* Example:
+      statbot.hears(["status"], reply => {
+        reply(JSON.stringify(require('os')));
+      });
+  */
+  function hears(matches, callback){
+    controller.hears(matches, 'message_received', function(bot, message){
+      if(message.user == options.page_scoped_user_id){
+        function reply(text){
+          bot.reply(message, text);
+        }
+        callback(message.text, reply);
       }
-      callback(message.text, reply);
-    }
-  });
+    });
+  }
+  
+  return {
+    says: says,
+    hears: hears
+  };
 }
-
-controller.setupWebserver(process.env.PORT, function(err, webserver) {
-  controller.createWebhookEndpoints(webserver, bot, function() {
-    console.log('Ready to receive messages');
-  });
-});
-
-module.exports.hears(['^hello', '^hi'], function(text, reply) {
-  reply("hi");
-  reply(text);
-});
-
-
-controller.on('message_received', function(bot, message) {
-    bot.reply(message, 'Unknown command.');
-    return false;
-});

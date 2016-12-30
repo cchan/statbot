@@ -19,7 +19,9 @@
   "homepage": "https://github.com/clive-io/statbot#readme",
   "dependencies": {
     "botkit": "^0.4.5",
-    "dotenv-safe": "^3.0.0",
-    "pm2": "^2.2.3"
+    "portfinder": "^1.0.10"
+  },
+  "devDependencies": {
+    "dotenv-safe": "^3.0.0"
   }
 }
