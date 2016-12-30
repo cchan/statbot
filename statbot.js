@@ -1,16 +1,5 @@
 let Botkit = require('botkit');
 
-/*
-let statbot = require('statbot')({
-  verify_token: FB_VERIFY_TOKEN,
-  page_token: FB_PAGE_TOKEN,
-  app_secret: FB_APP_SECRET,
-  page_scoped_user_id: FB_USER_ID
-});
-
-statbot.use(statbot.logwatch({options}))
-*/
-
 module.exports = function(options){
   if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id)
     throw new Error("Fatal: missing required options for statbot initialization.");
@@ -41,6 +30,7 @@ module.exports = function(options){
   else
     require('portfinder').getPort(function(err, port){
       if(err) throw new Error(err);
+      options.port = port;
       setupReceive(port);
     });
   
@@ -50,15 +40,6 @@ module.exports = function(options){
       return false;
   });
   
-  /* Example:
-      statbot.says(say => {
-        pm2.launchBus((err, bus) => {
-          bus.on('log:out', data => {
-            say(data);
-          });
-        });
-      });
-  */
   function says(callback){
     callback((thing) => {
       bot.say({
@@ -68,11 +49,6 @@ module.exports = function(options){
     });
   }
   
-  /* Example:
-      statbot.hears(["status"], reply => {
-        reply(JSON.stringify(require('os')));
-      });
-  */
   function hears(matches, callback){
     controller.hears(matches, 'message_received', function(bot, message){
       if(message.user == options.page_scoped_user_id){
@@ -86,6 +62,7 @@ module.exports = function(options){
   
   return {
     says: says,
-    hears: hears
+    hears: hears,
+    port: options.port
   };
 }
