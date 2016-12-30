@@ -25,7 +25,7 @@ statbot.hears(["status"], reply => {
 
 
 let controller = Botkit.facebookbot({
-  debug: true,
+  debug: false,
   log: true,
   access_token: process.env.FB_PAGE_TOKEN,
   verify_token: process.env.FB_VERIFY_TOKEN,
@@ -50,7 +50,7 @@ module.exports.says = function(callback){
 
 
 
-module.exports.hears(matches, callback){
+module.exports.hears = function(matches, callback){
   controller.hears(matches, 'message_received,facebook_postback', function(bot, message){
     function reply(text){
       bot.reply(message, text);
