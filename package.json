@@ -1,7 +1,7 @@
 {
-  "name": "statbot",
-  "version": "0.0.1",
-  "description": "",
+  "name": "server-statbot",
+  "version": "0.1.0",
+  "description": "Get notifications when things happen on your server.",
   "main": "statbot.js",
   "scripts": {
     "test": "mocha"
@@ -17,8 +17,7 @@
   },
   "homepage": "https://github.com/clive-io/statbot#readme",
   "dependencies": {
-    "botkit": "^0.4.5",
-    "portfinder": "^1.0.10"
+    "botkit": "^0.4.5"
   },
   "devDependencies": {
     "dotenv-safe": "^3.0.0",

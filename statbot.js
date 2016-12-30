@@ -1,7 +1,7 @@
 let Botkit = require('botkit');
 
 module.exports = function(options){
-  if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id)
+  if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id || !options.port)
     throw new Error("Fatal: missing required options for statbot initialization.");
   
   let controller = Botkit.facebookbot({
@@ -17,51 +17,37 @@ module.exports = function(options){
   
   var bot = controller.spawn({});
   
-  
-  function setupReceive(port){
-    controller.setupWebserver(port, function(err, webserver) {
-      controller.createWebhookEndpoints(webserver, bot, function() {
-        console.log('Ready to receive messages');
-      });
+  //Set up receive webhook for Facebook
+  controller.setupWebserver(options.port, function(err, webserver) {
+    controller.createWebhookEndpoints(webserver, bot, function() {
+      console.log('Ready to receive messages');
     });
-  }
-  if(options.port)
-    setupReceive(options.port);
-  else
-    require('portfinder').getPort(function(err, port){
-      if(err) throw new Error(err);
-      options.port = port;
-      setupReceive(port);
-    });
+  });
   
-  //Catch-all
+  //Catch-all from user
   controller.on('message_received', function(bot, message) {
       bot.reply(message, 'Unknown command.');
       return false;
   });
   
-  function says(callback){
-    callback((thing) => {
-      bot.say({
-        text: JSON.stringify(thing),
-        channel: options.page_scoped_user_id
-      });
+  //Say things
+  function say(thing){
+    bot.say({
+      text: JSON.stringify(thing),
+      channel: options.page_scoped_user_id
     });
   }
   
+  //Say things when heard things
   function hears(matches, callback){
     controller.hears(matches, 'message_received', function(bot, message){
-      if(message.user == options.page_scoped_user_id){
-        function reply(text){
-          bot.reply(message, text);
-        }
-        callback(message.text, reply);
-      }
+      if(message.user == options.page_scoped_user_id)
+        callback(message.text, (text)=>{bot.reply(message, text);});
     });
   }
   
   return {
-    says: says,
+    say: say,
     hears: hears,
     port: options.port
   };

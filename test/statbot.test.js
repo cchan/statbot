@@ -14,13 +14,17 @@ let statbot = require('statbot')({
   verify_token: process.env.FB_VERIFY_TOKEN,
   page_token: process.env.FB_PAGE_TOKEN,
   app_secret: process.env.FB_APP_SECRET,
-  page_scoped_user_id: process.env.FB_USER_ID
+  page_scoped_user_id: process.env.FB_USER_ID,
+  port: 5812
 });
 
-statbot.says(say => {
+pm2.connect(() => {
   pm2.launchBus((err, bus) => {
-    bus.on('log:out', data => {
-      say(data);
+    bus.on('log:out', packet => {
+      statbot.say('[' + packet.process.name + '] ' + packet.data);
+    });
+    bus.on('log:err', packet => {
+      statbot.say('[' + packet.process.name + '][err] ' + packet.data);
     });
   });
 });
