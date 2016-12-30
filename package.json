@@ -1,7 +1,7 @@
 {
   "name": "server-statbot",
-  "version": "0.1.0",
-  "description": "Get notifications when things happen on your server.",
+  "version": "0.2.0",
+  "description": "Get Facebook Messenger notifications on server events.",
   "main": "statbot.js",
   "scripts": {
     "test": "mocha"
