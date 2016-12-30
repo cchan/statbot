@@ -35,27 +35,24 @@ let controller = Botkit.facebookbot({
 
 var bot = controller.spawn({});
 
-
-
-module.exports.says = function(callback){
-  function say(thing){
+module.exports.says = (callback) => {
+  callback((thing) => {
     bot.say({
       text: JSON.stringify(thing),
       channel: process.env.FB_USER_ID
     });
-  }
-  
-  callback(say);
+  });
 };
-
 
 
 module.exports.hears = function(matches, callback){
   controller.hears(matches, 'message_received,facebook_postback', function(bot, message){
-    function reply(text){
-      bot.reply(message, text);
+    if(message.user == process.env.FB_USER_ID){
+      function reply(text){
+        bot.reply(message, text);
+      }
+      callback(message.text, reply);
     }
-    callback(reply);
   });
 }
 
@@ -65,10 +62,9 @@ controller.setupWebserver(process.env.PORT, function(err, webserver) {
   });
 });
 
-
-controller.hears(['^hello', '^hi'], 'message_received,facebook_postback', function(bot, message) {
-  bot.reply(message, JSON.stringify(message));
-  bot.reply(message, "hi");
+module.exports.hears(['^hello', '^hi'], function(text, reply) {
+  reply("hi");
+  reply(text);
 });
 
 
