@@ -5,7 +5,7 @@ let Botkit = require('botkit');
 //todo: https://github.com/spchuang/fb-local-chat-bot
 
 module.exports = function(options){
-  if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id || !options.port)
+  if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id)
     throw new Error("Fatal: missing required options for statbot initialization.");
   
   let controller = Botkit.facebookbot({
@@ -19,20 +19,22 @@ module.exports = function(options){
     receive_via_postback: true
   });
   
-  var bot = controller.spawn({});
+  let bot = controller.spawn({});
   
-  //Set up receive webhook for Facebook
-  controller.setupWebserver(options.port, function(err, webserver) {
-    controller.createWebhookEndpoints(webserver, bot, function() {
-      console.log('Ready to receive messages on port ' + options.port);
+  function listen(port){
+    //Catch-all from user (needs to be set up last I think?)
+    controller.on('message_received', function(bot, message) {
+      if(message.user == options.page_scoped_user_id)
+        bot.reply(message, 'Unknown command.');
     });
-  });
-  
-  //Catch-all from user
-  controller.on('message_received', function(bot, message) {
-    if(message.user == options.page_scoped_user_id)
-      bot.reply(message, 'Unknown command.');
-  });
+    
+    //Set up receive webhook for Facebook
+    controller.setupWebserver(port, function(err, webserver) {
+      controller.createWebhookEndpoints(webserver, bot, function() {
+        console.log('Ready to receive messages on port ' + port);
+      });
+    });
+  }
   
   //Say things
   function say(thing){
@@ -52,6 +54,7 @@ module.exports = function(options){
   
   return {
     say: say,
-    hears: hears
+    hears: hears,
+    listen: listen
   };
 }
