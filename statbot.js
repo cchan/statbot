@@ -30,8 +30,8 @@ module.exports = function(options){
   
   //Catch-all from user
   controller.on('message_received', function(bot, message) {
-      if(message.user == options.page_scoped_user_id)
-        bot.reply(message, 'Unknown command.');
+    if(message.user == options.page_scoped_user_id)
+      bot.reply(message, 'Unknown command.');
   });
   
   //Say things
