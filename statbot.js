@@ -1,8 +1,6 @@
 let Botkit = require('botkit');
 
-//todo: statbot.use(statbot.logwatch({options}))
-  //module.exports.logwatch = require("./botbits/logwatch");
-//todo: https://github.com/spchuang/fb-local-chat-bot
+//todo: unit test with https://github.com/spchuang/fb-local-chat-bot
 
 module.exports = function(options){
   if(!options.verify_token || !options.page_token || !options.app_secret || !options.page_scoped_user_id)
@@ -37,24 +35,31 @@ module.exports = function(options){
   }
   
   //Say things
-  function say(thing){
+  function say(channel, thing){
     bot.say({
-      text: JSON.stringify(thing),
+      text: '[' + channel + '] ' + JSON.stringify(thing),
       channel: options.page_scoped_user_id
     });
   }
   
-  //Say things when heard things
-  function hears(matches, callback){
+  //Say things when heard things [this is just a special case; maybe make this a middleware?]
+  function hears(channel, matches, callback){
     controller.hears(matches, 'message_received', function(bot, message){
       if(message.user == options.page_scoped_user_id)
-        callback(message.text, (text)=>{bot.reply(message, text);});
+        callback(message.text, (text)=>{bot.reply(message, '[' + channel + '] ' + text);});
     });
+  }
+  
+  function use(channel, middleware){
+    middleware(say.bind(channel));
   }
   
   return {
     say: say,
     hears: hears,
-    listen: listen
+    listen: listen,
+    use: use
   };
 }
+
+module.exports.logtail = require('./botbits/logtail');

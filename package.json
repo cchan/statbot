@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/clive-io/statbot#readme",
   "dependencies": {
-    "botkit": "^0.4.5"
+    "botkit": "^0.4.5",
+    "tail": "^1.2.1"
   },
   "devDependencies": {
     "mocha": "^3.2.0"
