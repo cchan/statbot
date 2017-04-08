@@ -46,7 +46,7 @@ module.exports = function(options){
     //Only sends after a delay of no activity
     saycache[channel].timeout = setTimeout(function(){
       bot.say({
-        text: saycache[channel].content.join('\u000A'),
+        text: '[' + channel + ']\n' + saycache[channel].content.join('\u000A'),
         channel: options.page_scoped_user_id
       });
       delete saycache[channel];
