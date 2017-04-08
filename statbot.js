@@ -63,8 +63,8 @@ module.exports = function(options){
     });
   }
   
-  function use(channel, middleware){
-    middleware(say.bind(channel));
+  function use(middleware){
+    middleware(say);
   }
   
   return {
