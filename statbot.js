@@ -35,18 +35,31 @@ module.exports = function(options){
   }
   
   //Say things
+  var saycache = {};
+  const SAY_CACHE_DELAY = 1500; //ms
   function say(channel, thing){
-    bot.say({
-      text: '[' + channel + '] ' + JSON.stringify(thing),
-      channel: options.page_scoped_user_id
-    });
+    if(!saycache[channel])
+      saycache[channel] = {timeout: null, content: []};
+    else
+      clearTimeout(saycache[channel].timeout);
+    
+    //Only sends after a delay of no activity
+    saycache[channel].timeout = setTimeout(function(){
+      bot.say({
+        text: saycache[channel].content.join('\u000A'),
+        channel: options.page_scoped_user_id
+      });
+      delete saycache[channel];
+    }, SAY_CACHE_DELAY);
+    
+    saycache[channel].content.push(JSON.stringify(thing).replace('\\n', '\u000A').replace('\n', '\u000A'));
   }
   
   //Say things when heard things [this is just a special case; maybe make this a middleware?]
   function hears(channel, matches, callback){
     controller.hears(matches, 'message_received', function(bot, message){
       if(message.user == options.page_scoped_user_id)
-        callback(message.text, (text)=>{bot.reply(message, '[' + channel + '] ' + text);});
+        callback(message.text, say.bind(channel));
     });
   }
   
