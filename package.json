@@ -1,6 +1,6 @@
 {
   "name": "server-statbot",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Get Facebook Messenger notifications on server events.",
   "main": "statbot.js",
   "scripts": {

@@ -59,7 +59,7 @@ module.exports = function(options){
   function hears(channel, matches, callback){
     controller.hears(matches, 'message_received', function(bot, message){
       if(message.user == options.page_scoped_user_id)
-        callback(message.text, say.bind(channel));
+        callback(message.text, say.bind(null, channel));
     });
   }
   
