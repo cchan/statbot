@@ -3,7 +3,17 @@ module.exports = function(file, options){ // For example, statbot.use(logtail("/
   let tailer = new Tail(file, {follow: true});
   
   return function(say){
-    tailer.on('line', (data) => say(file, data));
-    tailer.on('err', (data) => say(file + ' err', data));
-  }
+    tailer.on('line', (data) => {
+      if(typeof options.transform === "function")
+        data = options.transform(data);
+      if(data)
+        say(file, data);
+    });
+    tailer.on('err', (data) => {
+      if(typeof options.transform === "function")
+        data = options.transform(data);
+      if(data)
+        say(file + ' err', data);
+    });
+  };
 };
