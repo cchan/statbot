@@ -34,25 +34,37 @@ module.exports = function(options){
     });
   }
   
-  //Say things
+  //Say things, with caching and a char limit.
+  //Channel length must be << CHAR_LIMIT for this to work properly.
   var saycache = {};
   const SAY_CACHE_DELAY = 1500; //ms
+  const CHAR_LIMIT = 640; //https://developers.facebook.com/docs/messenger-platform/send-api-reference#request
   function say(channel, thing){
     if(!saycache[channel])
-      saycache[channel] = {timeout: null, content: []};
+      saycache[channel] = {timeout: null, content: "[" + channel + "]"};
     else
       clearTimeout(saycache[channel].timeout);
     
-    //Only sends after a delay of no activity
+    //Sends only after a delay of no activity.
     saycache[channel].timeout = setTimeout(function(){
-      bot.say({
-        text: '[' + channel + ']\n' + saycache[channel].content.join('\u000A'),
-        channel: options.page_scoped_user_id
-      });
+      raw_say(saycache[channel].content);
       delete saycache[channel];
     }, SAY_CACHE_DELAY);
     
-    saycache[channel].content.push(JSON.stringify(thing).replace('\\n', '\u000A').replace('\n', '\u000A'));
+    //Append to the content.
+    saycache[channel].content += '\n' + JSON.stringify(thing).replace('\\n', '\n');
+    
+    //If exceeds the CHAR_LIMIT, chunk off the extra from the beginning
+    while(saycache[channel].content.length >= CHAR_LIMIT){
+      raw_say(saycache[channel].content.slice(0, CHAR_LIMIT - 3) + '...');
+      saycache[channel].content = '[' + channel + ']\n' + saycache[channel].content.slice(CHAR_LIMIT - 3);
+    }
+  }
+  function raw_say(text){
+    bot.say({
+      text: text,
+      channel: options.page_scoped_user_id
+    });
   }
   
   //Say things when heard things [this is just a special case; maybe make this a middleware?]
