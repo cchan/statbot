@@ -41,7 +41,7 @@ module.exports = function(options){
   const CHAR_LIMIT = 640; //https://developers.facebook.com/docs/messenger-platform/send-api-reference#request
   function say(channel, thing){
     if(!saycache[channel])
-      saycache[channel] = {timeout: null, content: "[" + channel + "]"};
+      saycache[channel] = {timeout: null, content: '[' + channel + ']'};
     else
       clearTimeout(saycache[channel].timeout);
     
