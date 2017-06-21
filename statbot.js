@@ -19,7 +19,9 @@ module.exports = function(options){
   
   let bot = controller.spawn({});
   
-  function listen(port){
+  function listen(port, callback){
+    callback = callback || function(){};
+    
     //Catch-all from user (needs to be set up last I think?)
     controller.on('message_received', function(bot, message) {
       if(message.user == options.page_scoped_user_id)
@@ -28,8 +30,11 @@ module.exports = function(options){
     
     //Set up receive webhook for Facebook
     controller.setupWebserver(port, function(err, webserver) {
+      if(err)
+        callback(err);
       controller.createWebhookEndpoints(webserver, bot, function() {
         console.log('Ready to receive messages on port ' + port);
+        callback(null);
       });
     });
   }
