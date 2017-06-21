@@ -83,6 +83,7 @@ module.exports = function(options){
   }
   
   return {
+    controller: controller,
     say: say,
     hears: hears,
     listen: listen,
