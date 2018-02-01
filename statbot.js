@@ -39,12 +39,12 @@ module.exports = function(options){
     });
   }
   
-  let muted = new Set();
+  let mutelist = new Set();
   function mute(channel){
-    return muted.add(channel);
+    return mutelist.add(channel);
   }
   function unmute(channel){
-    return muted.delete(channel);
+    return mutelist.delete(channel);
   }
   
   //Say things, with caching and a char limit.
@@ -53,7 +53,7 @@ module.exports = function(options){
   const SAY_CACHE_DELAY = 1500; //ms
   const CHAR_LIMIT = 640; //https://developers.facebook.com/docs/messenger-platform/send-api-reference#request
   function say(channel, thing){
-    if(muted.has(channel))
+    if(mutelist.has(channel))
       return;
     
     if(typeof thing !== "string")
@@ -102,6 +102,7 @@ module.exports = function(options){
     controller: controller,
     mute: mute,
     unmute: unmute,
+    mutelist: mutelist,
     say: say,
     hears: hears,
     listen: listen,
