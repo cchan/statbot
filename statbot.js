@@ -39,12 +39,23 @@ module.exports = function(options){
     });
   }
   
+  let muted = new Set();
+  function mute(channel){
+    return muted.add(channel);
+  }
+  function unmute(channel){
+    return muted.delete(channel);
+  }
+  
   //Say things, with caching and a char limit.
   //Channel length must be << CHAR_LIMIT for this to work properly.
   var saycache = {};
   const SAY_CACHE_DELAY = 1500; //ms
   const CHAR_LIMIT = 640; //https://developers.facebook.com/docs/messenger-platform/send-api-reference#request
   function say(channel, thing){
+    if(muted.has(channel))
+      return;
+    
     if(typeof thing !== "string")
       thing = JSON.stringify(thing);
     
@@ -89,10 +100,12 @@ module.exports = function(options){
   
   return {
     controller: controller,
+    mute: mute,
+    unmute: unmute,
     say: say,
     hears: hears,
     listen: listen,
-    use: use
+    use: use,
   };
 }
 
