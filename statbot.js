@@ -13,7 +13,7 @@ module.exports = function(options){
     verify_token: options.verify_token,
     app_secret: options.app_secret,
     validate_requests: true,
-    // require_delivery: true,
+    require_delivery: true,
     receive_via_postback: true
   });
   
