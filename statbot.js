@@ -32,6 +32,9 @@ module.exports = function(options){
     controller.setupWebserver(port, function(err, webserver) {
       if(err)
         callback(err);
+      webserver.get('/uptime', function(req, res){
+        res.sendStatus(200);
+      });
       controller.createWebhookEndpoints(webserver, bot, function() {
         console.log('Ready to receive messages on port ' + port);
         callback(null);
