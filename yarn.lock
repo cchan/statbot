@@ -620,7 +620,7 @@ botkit-studio-sdk@^1.0.8:
     promise "^8.0.2"
     request "^2.88.0"
 
-botkit@^0.6.13:
+botkit@^0.6.14:
   version "0.6.21"
   resolved "https://registry.yarnpkg.com/botkit/-/botkit-0.6.21.tgz#0bf44792e2f1911e657fdfcbf13e529856face01"
   dependencies:
