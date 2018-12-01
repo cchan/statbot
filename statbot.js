@@ -87,7 +87,8 @@ module.exports = function(options){
       text: text,
       channel: options.page_scoped_user_id
     }, function(err, response){
-      throw JSON.stringify(err);
+      if (err)
+        throw JSON.stringify(err);
     });
   }
   
