@@ -1,6 +1,6 @@
 {
   "name": "server-statbot",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Get Facebook Messenger notifications on server events.",
   "main": "statbot.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/clive-io/statbot#readme",
   "dependencies": {
-    "botkit": "^4.5.0",
+    "botkit": "^0.6.21",
     "tail": "^2.0.3"
   }
 }
